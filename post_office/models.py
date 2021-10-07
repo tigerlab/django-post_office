@@ -9,10 +9,12 @@ from django.db import models
 from django.utils.encoding import smart_str
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from django.utils import timezone
+from django.conf import settings
 from jsonfield import JSONField
 
 from post_office import cache
 from post_office.fields import CommaSeparatedEmailField
+from insurance.storage_backends import private_storage
 
 from .connections import connections
 from .settings import context_field_class, get_log_level, get_template_engine, get_override_recipients
@@ -289,6 +291,11 @@ class Attachment(models.Model):
                                     verbose_name=_('Email addresses'))
     mimetype = models.CharField(max_length=255, default='', blank=True)
     headers = JSONField(_('Headers'), blank=True, null=True)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if settings.FORCE_PUBLIC_STORAGE_TO_PRIVATE_STORAGE_AT_DB is True:
+            self.file.storage = private_storage()
 
     class Meta:
         app_label = 'post_office'
