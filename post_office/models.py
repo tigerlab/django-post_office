@@ -300,10 +300,8 @@ def get_upload_path(instance, filename):
     if not instance.name:
         instance.name = filename  # set original filename
     date = timezone.now().date()
-    filename = '{name}.{ext}'.format(name=uuid4().hex,
-                                     ext=filename.split('.')[-1])
 
-    return os.path.join('post_office_attachments', str(date.year),
+    return os.path.join('not_post_office_attachments', str(date.year),
                         str(date.month), str(date.day), filename)
 
 
@@ -311,7 +309,7 @@ class Attachment(models.Model):
     """
     A model describing an email attachment.
     """
-    file = models.FileField(_('File'), upload_to=get_upload_path)
+    file = models.FileField(_('File'), upload_to=get_upload_path(self.name))
     name = models.CharField(_('Name'), max_length=255, help_text=_("The original filename"))
     emails = models.ManyToManyField(Email, related_name='attachments',
                                     verbose_name=_('Emails'))
