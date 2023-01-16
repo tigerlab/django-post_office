@@ -309,7 +309,7 @@ class Attachment(models.Model):
     """
     A model describing an email attachment.
     """
-    file = models.FileField(_('File'), upload_to=get_upload_path(self.name))
+    file = models.FileField(_('File'), upload_to=get_upload_path)
     name = models.CharField(_('Name'), max_length=255, help_text=_("The original filename"))
     emails = models.ManyToManyField(Email, related_name='attachments',
                                     verbose_name=_('Emails'))
