@@ -300,6 +300,13 @@ def get_upload_path(instance, filename):
     if not instance.name:
         instance.name = filename  # set original filename
     date = timezone.now().date()
+    time = timezone.now().time()
+
+    if override_path:
+        filename = f'{filename} {time.hour:02d}{time.minute:02d}{time.microsecond}'
+    else:
+        filename = '{name}.{ext}'.format(name=uuid4().hex,
+                                         ext=filename.split('.')[-1])
 
     return os.path.join('post_office_attachments', str(date.year),
                         str(date.month), str(date.day), filename)
@@ -309,6 +316,7 @@ class Attachment(models.Model):
     """
     A model describing an email attachment.
     """
+    override_path = False
     file = models.FileField(_('File'), upload_to=get_upload_path)
     name = models.CharField(_('Name'), max_length=255, help_text=_("The original filename"))
     emails = models.ManyToManyField(Email, related_name='attachments',
