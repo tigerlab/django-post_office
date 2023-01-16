@@ -301,7 +301,7 @@ def get_upload_path(instance, filename):
         instance.name = filename  # set original filename
     date = timezone.now().date()
 
-    return os.path.join('not_post_office_attachments', str(date.year),
+    return os.path.join('post_office_attachments', str(date.year),
                         str(date.month), str(date.day), filename)
 
 
