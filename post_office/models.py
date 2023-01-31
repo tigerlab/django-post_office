@@ -9,7 +9,6 @@ from django.db import models
 from django.utils.encoding import smart_str
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from django.utils import timezone
-from django.conf import settings
 from jsonfield import JSONField
 
 from post_office import cache
@@ -274,8 +273,13 @@ def get_upload_path(instance, filename):
     if not instance.name:
         instance.name = filename  # set original filename
     date = timezone.now().date()
-    filename = '{name}.{ext}'.format(name=uuid4().hex,
-                                     ext=filename.split('.')[-1])
+    time = timezone.now().time()
+
+    if settings.OVERRIDE_POST_OFFICE_UPLOAD_TO_PATH:
+        filename = f'{filename} {time.hour:02d}{time.minute:02d}{time.microsecond}'
+    else:
+        filename = '{name}.{ext}'.format(name=uuid4().hex,
+                                         ext=filename.split('.')[-1])
 
     return os.path.join('post_office_attachments', str(date.year),
                         str(date.month), str(date.day), filename)
