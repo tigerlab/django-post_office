@@ -9,7 +9,6 @@ from django.db import models
 from django.utils.encoding import smart_str
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from django.utils import timezone
-from django.conf import settings
 from jsonfield import JSONField
 
 from post_office import cache
