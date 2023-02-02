@@ -277,7 +277,7 @@ def get_upload_path(instance, filename):
     time = timezone.now().time()
 
     if settings.OVERRIDE_POST_OFFICE_UPLOAD_TO_PATH:
-        filename = f'{filename} {time.hour:02d}{time.minute:02d}{time.microsecond}'
+        filename = f"{filename} {time.hour:02d}{time.minute:02d}{time.microsecond}"
     else:
         filename = '{name}.{ext}'.format(name=uuid4().hex,
                                          ext=filename.split('.')[-1])
