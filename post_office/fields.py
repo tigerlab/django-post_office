@@ -1,6 +1,6 @@
 import django
 from django.db.models import TextField
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from .validators import validate_comma_separated_emails
 
@@ -10,22 +10,25 @@ class CommaSeparatedEmailField(TextField):
     description = _("Comma-separated emails")
 
     def __init__(self, *args, **kwargs):
-        kwargs['blank'] = True
+        kwargs["blank"] = True
         super().__init__(*args, **kwargs)
 
     def formfield(self, **kwargs):
         defaults = {
-            'error_messages': {
-                'invalid': _('Only comma separated emails are allowed.'),
+            "error_messages": {
+                "invalid": _("Only comma separated emails are allowed."),
             }
         }
         defaults.update(kwargs)
         return super().formfield(**defaults)
 
     if django.VERSION < (2, 0):
+
         def from_db_value(self, value, expression, connection, context):
             return self.to_python(value)
+
     else:
+
         def from_db_value(self, value, expression, connection):
             return self.to_python(value)
 
@@ -40,14 +43,14 @@ class CommaSeparatedEmailField(TextField):
         if isinstance(value, str):
             return value
         else:
-            return ', '.join(map(lambda s: s.strip(), value))
+            return ", ".join(map(lambda s: s.strip(), value))
 
     def to_python(self, value):
         if isinstance(value, str):
-            if value == '':
+            if value == "":
                 return []
             else:
-                return [s.strip() for s in value.split(',')]
+                return [s.strip() for s in value.split(",")]
         else:
             return value
 
@@ -57,6 +60,7 @@ class CommaSeparatedEmailField(TextField):
         Taken from smiley chris' easy_thumbnails
         """
         from south.modelsinspector import introspector
-        field_class = 'django.db.models.fields.TextField'
+
+        field_class = "django.db.models.fields.TextField"
         args, kwargs = introspector(self)
         return (field_class, args, kwargs)

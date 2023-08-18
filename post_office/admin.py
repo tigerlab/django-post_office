@@ -4,17 +4,19 @@ from django.contrib import admin
 from django.conf import settings
 from django.forms.widgets import TextInput
 from django.utils.text import Truncator
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from .fields import CommaSeparatedEmailField
 from .models import Attachment, Log, Email, EmailTemplate, STATUS
 
 
+@admin.display(
+    description='Message'
+)
 def get_message_preview(instance):
     return ('{0}...'.format(instance.message[:25]) if len(instance.message) > 25
             else instance.message)
 
-get_message_preview.short_description = 'Message'
 
 
 class AttachmentInline(admin.StackedInline):
@@ -42,14 +44,17 @@ class CommaSeparatedEmailWidget(TextInput):
         return ','.join([item for item in value])
 
 
+@admin.action(
+    description='Requeue selected emails'
+)
 def requeue(modeladmin, request, queryset):
     """An admin action to requeue emails."""
     queryset.update(status=STATUS.queued)
 
 
-requeue.short_description = 'Requeue selected emails'
 
 
+@admin.register(Email)
 class EmailAdmin(admin.ModelAdmin):
     list_display = ('id', 'to_display', 'subject', 'template',
                     'status', 'last_updated')
@@ -65,13 +70,16 @@ class EmailAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('template')
 
+    @admin.display(
+        description='to',
+        ordering='to',
+    )
     def to_display(self, instance):
         return ', '.join(instance.to)
 
-    to_display.short_description = 'to'
-    to_display.admin_order_field = 'to'
 
 
+@admin.register(Log)
 class LogAdmin(admin.ModelAdmin):
     list_display = ('date', 'email', 'status', get_message_preview)
 
@@ -107,6 +115,7 @@ class EmailTemplateInline(admin.StackedInline):
         return len(settings.LANGUAGES)
 
 
+@admin.register(EmailTemplate)
 class EmailTemplateAdmin(admin.ModelAdmin):
     form = EmailTemplateAdminForm
     list_display = ('name', 'description_shortened', 'subject', 'languages_compact', 'created')
@@ -127,15 +136,19 @@ class EmailTemplateAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         return self.model.objects.filter(default_template__isnull=True)
 
+    @admin.display(
+        description=_("Description"),
+        ordering='description',
+    )
     def description_shortened(self, instance):
         return Truncator(instance.description.split('\n')[0]).chars(200)
-    description_shortened.short_description = _("Description")
-    description_shortened.admin_order_field = 'description'
 
+    @admin.display(
+        description=_("Languages")
+    )
     def languages_compact(self, instance):
         languages = [tt.language for tt in instance.translated_templates.order_by('language')]
         return ', '.join(languages)
-    languages_compact.short_description = _("Languages")
 
     def save_model(self, request, obj, form, change):
         obj.save()
@@ -145,11 +158,8 @@ class EmailTemplateAdmin(admin.ModelAdmin):
             obj.translated_templates.update(name=obj.name)
 
 
+@admin.register(Attachment)
 class AttachmentAdmin(admin.ModelAdmin):
     list_display = ('name', 'file', )
 
 
-admin.site.register(Email, EmailAdmin)
-admin.site.register(Log, LogAdmin)
-admin.site.register(EmailTemplate, EmailTemplateAdmin)
-admin.site.register(Attachment, AttachmentAdmin)

@@ -1,0 +1,49 @@
+default_language_version:
+  python: python3
+exclude: 'docs|node_modules|migrations|.git|.tox|tsconfig.json'
+default_stages: [commit, push]
+fail_fast: true
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-docstring-first
+      - id: check-json
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+        exclude: 'deploy/.*'
+      - id: end-of-file-fixer
+      # - id: pretty-format-json
+      - id: trailing-whitespace
+
+  - repo: https://github.com/psf/black
+    rev: 22.12.0
+    hooks:
+      - id: black
+        language_version: python3
+        additional_dependencies: [ regex == 2021.9.30 ]
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+        args: ['--config=setup.cfg']
+        additional_dependencies: [flake8-isort]
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.3.1
+    hooks:
+      - id: pyupgrade
+
+  - repo: https://github.com/adamchainz/django-upgrade
+    rev: 1.14.1  # replace with latest tag on GitHub
+    hooks:
+    -   id: django-upgrade
+        args: [--target-version, "4.2"]   # Replace with Django version
