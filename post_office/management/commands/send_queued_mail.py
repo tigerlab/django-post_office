@@ -53,8 +53,13 @@ class Command(BaseCommand):
                     # Close DB connection to avoid multiprocessing errors
                     connection.close()
 
-                    if not Email.objects.filter(status=STATUS.queued) \
-                            .filter(Q(scheduled_time__lte=now()) | Q(scheduled_time=None)).exists():
+                    if (
+                        not Email.objects.filter(status=STATUS.queued)
+                        .filter(Q(scheduled_time__lte=now()) | Q(scheduled_time=None))
+                        .select_related("template")
+                        .prefetch_related("attachments")
+                        .exists()
+                    ):
                         break
         except FileLocked:
             logger.info('Failed to acquire lock, terminating now.')
