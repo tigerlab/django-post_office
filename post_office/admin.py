@@ -4,7 +4,7 @@ from django import forms
 from django.db import models
 from django.contrib import admin
 from django.conf import settings
-from django.conf.urls import re_path
+from django.urls import re_path
 from django.core.exceptions import ValidationError
 from django.core.mail.message import SafeMIMEText
 from django.forms import BaseInlineFormSet

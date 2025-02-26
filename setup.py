@@ -47,7 +47,7 @@ setup(
     zip_safe=False,
     include_package_data=True,
     package_data={'': ['README.rst']},
-    install_requires=['django>=2.2', 'jsonfield>=3.0'],
+    install_requires=['django>=2.2', 'jsonfield2>=4.0.0'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
