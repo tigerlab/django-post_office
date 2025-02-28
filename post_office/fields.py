@@ -1,6 +1,6 @@
 import django
 from django.db.models import TextField
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from .validators import validate_comma_separated_emails
 
