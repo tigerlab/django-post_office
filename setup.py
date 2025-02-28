@@ -42,8 +42,8 @@ setup(
     include_package_data=True,
     package_data={'': ['README.rst']},
     install_requires=[
-        'django>=1.11', 
-        'jsonfield2<=3.0.3',  # Remove version freezing after drop support for Django 1.11
+        'django>=2.2',
+        'jsonfield2>=4.0.0',  # Remove version freezing after drop support for Django 1.11
     ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
